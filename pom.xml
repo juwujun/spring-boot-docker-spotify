@@ -21,6 +21,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<docker.host>http://192.168.56.101:2375</docker.host>
+        <docker.repository>192.168.56.101:8082</docker.repository>
 	</properties>
 
 	<dependencies>
@@ -55,8 +57,34 @@
 						<goals>
 							<goal>build</goal>
 						</goals>
-						<configuration>
-							<imageName>192.168.0.19:5000/checkip:${project.version}</imageName>
+					</execution>
+					<execution>
+                    <id>tag-image</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>tag</goal>
+                    </goals>
+                     <configuration>
+                       <dockerHost>http://192.168.56.101:2375/</dockerHost>
+							<image>checkip:${project.version}</image>
+                        <newName>192.168.56.101:8444/checkip:${project.version}</newName>
+                    </configuration>
+                </execution>
+                 <execution>
+                    <id>push-image</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>push</goal>
+                    </goals>
+                    <configuration>
+                    <imageName>192.168.56.101:8444/checkip:${project.version}</imageName>
+                    </configuration>
+                </execution>
+				</executions>
+				<configuration>
+				<pushImage>true</pushImage>
+				<dockerHost>http://192.168.56.101:2375/</dockerHost>
+                        <imageName>192.168.56.101:8444/checkip:${project.version}</imageName>
 							<dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
 							<resources>
 								<resource>
@@ -65,9 +93,9 @@
 									<include>${project.build.finalName}.jar</include>
 								</resource>
 							</resources>
-						</configuration>
-					</execution>
-				</executions>
+							<serverId>docker-hub</serverId>
+                    <registryUrl>192.168.56.101:8444</registryUrl>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
