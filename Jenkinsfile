@@ -1,17 +1,13 @@
 pipeline {
     agent any
-    stages {
-stage('Build') {
-            steps {
-                sh 'mvn -B -DskipTests clean install -s /opt/setting.xml'
-            }
-        }
-
-stage('Nexus Lifecycle Analysis') {
-steps {
-nexusPolicyEvaluation iqApplication: 'mytest', iqStage: 'build'
-}
-}
+   node {
+  stage('SonarQube analysis') {
+    // requires SonarQube Scanner 2.8+
+    def scannerHome = tool 'sona330';
+    withSonarQubeEnv('SonarQube') {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
+  }
 }
 
 }
